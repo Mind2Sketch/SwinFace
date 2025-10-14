@@ -1,5 +1,5 @@
 # SwinFace
-Official Pytorch Implementation of the paper, "SwinFace: A Multi-task Transformer for Face Recognition, Facial Expression Recognition, Age Estimation and Face Attribute Estimation"（https://arxiv.org/pdf/2308.11509.pdf）
+Official Pytorch Implementation of the paper, "SwinFace: A Multi-task Transformer for Face Recognition, Facial Expression Recognition, Age Estimation and Face Attribute Estimation"（https://arxiv.org/pdf/2308.11509.pdf)
 
 ##
 In recent years, vision transformers have been introduced into face recognition and analysis and have achieved performance breakthroughs. 
