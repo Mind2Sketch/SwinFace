@@ -2,3 +2,4 @@ swinface_project/SwinFace_AgePred.pt
 test_images
 *.txt
 *.csv
+__pycache__
