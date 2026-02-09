@@ -4,6 +4,9 @@ import cv2
 import numpy as np
 import torch
 from pathlib import Path
+import os
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 
 from model import build_model
 
@@ -61,7 +64,7 @@ if __name__ == "__main__":
     print(f"Found {len(images)} images in {folder}")
     cfg = SwinFaceCfg()
     parser = argparse.ArgumentParser(description='PyTorch ArcFace Training')
-    parser.add_argument('--weight', type=str, default='swinface_project\SwinFace_AgePred.pt')
+    parser.add_argument('--weight', type=str, default='swinface_project/SwinFace_AgePred.pt')
     args = parser.parse_args()
     for img in images:
         inference(cfg, args.weight, img, out_file="test.txt")
