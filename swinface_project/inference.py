@@ -3,11 +3,13 @@ import argparse
 import cv2
 import numpy as np
 import torch
+from pathlib import Path
 
 from model import build_model
 
 @torch.no_grad()
-def inference(cfg, weight, img):
+def inference(cfg, weight, img, out_file="age_predictions.txt"):
+    img_path = img
     if img is None:
         img = np.random.randint(0, 255, size=(112, 112, 3), dtype=np.uint8)
     else:
@@ -30,7 +32,14 @@ def inference(cfg, weight, img):
     output = model(img)#.numpy()
 
     for each in output.keys():
-        print(each, "\t" , output[each][0].numpy())
+        # print(each, "\t" , output[each][0].numpy())
+        if each.startswith("Age"):
+            print(img_path, "=>", end=" ")
+            print(each, "\t" , output[each][0].numpy())
+            age = str(float(output[each][0].numpy()))
+
+            with open(out_file, "a") as f:
+                f.write(img_path + ","+ age + "\n")
 
 class SwinFaceCfg:
     network = "swin_t"
@@ -47,10 +56,13 @@ class SwinFaceCfg:
     embedding_size = 512
 
 if __name__ == "__main__":
-
+    folder = Path("test_images")
+    images = [str(p) for p in folder.glob("*") if p.suffix.lower() in {".jpg", ".jpeg"}]
+    print(f"Found {len(images)} images in {folder}")
     cfg = SwinFaceCfg()
     parser = argparse.ArgumentParser(description='PyTorch ArcFace Training')
-    parser.add_argument('--weight', type=str, default='<your path>/checkpoint_step_79999_gpu_0.pt')
-    parser.add_argument('--img', type=str, default="<your path>/test.jpg")
+    parser.add_argument('--weight', type=str, default='swinface_project\SwinFace_AgePred.pt')
     args = parser.parse_args()
-    inference(cfg, args.weight, args.img)
+    for img in images:
+        inference(cfg, args.weight, img, out_file="test.txt")
+
