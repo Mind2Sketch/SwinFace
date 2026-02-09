@@ -36,7 +36,7 @@ def inference(cfg, weight, img, out_file="age_predictions.txt"):
         if each.startswith("Age"):
             print(img_path, "=>", end=" ")
             print(each, "\t" , output[each][0].numpy())
-            age = str(float(output[each][0].numpy()))
+            age = str(output[each][0].item())
 
             with open(out_file, "a") as f:
                 f.write(img_path + ","+ age + "\n")
