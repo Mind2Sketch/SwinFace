@@ -20,7 +20,7 @@ from utils.utils_distributed_sampler import get_dist_info, worker_init_fn
 
 from .datasets import AgeGenderDataset, CelebADataset, RAFDataset, FGnetDataset, ExpressionDataset, LAPDataset
 from .samplers import SubsetRandomSampler
-from dataset import MXFaceDataset
+# from dataset import MXFaceDataset
 
 
 def get_analysis_train_dataloader(data_choose, config, local_rank) -> Iterable:
@@ -28,7 +28,7 @@ def get_analysis_train_dataloader(data_choose, config, local_rank) -> Iterable:
     if data_choose == "recognition":
         batch_size = config.recognition_bz
         root_dir = config.rec
-        dataset_train = MXFaceDataset(root_dir=root_dir, local_rank=local_rank)
+        dataset_train = None # MXFaceDataset(root_dir=root_dir, local_rank=local_rank)
 
     if data_choose == "age_gender":
         batch_size = config.age_gender_bz
