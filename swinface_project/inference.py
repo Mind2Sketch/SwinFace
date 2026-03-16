@@ -29,6 +29,9 @@ def write_txt(output, img_path, out_file):
         elif key == "Expression":
             pred = int(torch.argmax(val))
             attr_val = expression_map[pred]
+        elif key == "Gender":
+            pred = int(torch.argmax(val))
+            attr_val = "Male" if pred == 1 else "Female"
         else:
             attr_val = str(int(torch.argmax(val)))
 
