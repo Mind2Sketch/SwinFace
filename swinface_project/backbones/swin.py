@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.utils.checkpoint as checkpoint
-from timm.models.layers import DropPath, to_2tuple, trunc_normal_
+from timm.layers import DropPath, to_2tuple, trunc_normal_
 import torch.nn.functional as F
 
 class Mlp(nn.Module):
@@ -85,7 +85,7 @@ class WindowAttention(nn.Module):
         # get pair-wise relative position index for each token inside the window
         coords_h = torch.arange(self.window_size[0])
         coords_w = torch.arange(self.window_size[1])
-        coords = torch.stack(torch.meshgrid([coords_h, coords_w]))  # 2, Wh, Ww
+        coords = torch.stack(torch.meshgrid([coords_h, coords_w], indexing='ij'))  # 2, Wh, Ww
         coords_flatten = torch.flatten(coords, 1)  # 2, Wh*Ww
         relative_coords = coords_flatten[:, :, None] - coords_flatten[:, None, :]  # 2, Wh*Ww, Wh*Ww
         relative_coords = relative_coords.permute(1, 2, 0).contiguous()  # Wh*Ww, Wh*Ww, 2
@@ -109,11 +109,11 @@ class WindowAttention(nn.Module):
             x: input features with shape of (num_windows*B, N, C)
             mask: (0/-inf) mask with shape of (num_windows, Wh*Ww, Wh*Ww) or None
         """
-        with torch.cuda.amp.autocast(True):
+        with torch.amp.autocast('cuda',enabled=True):
             B_, N, C = x.shape
             qkv = self.qkv(x).reshape(B_, N, 3, self.num_heads, C // self.num_heads).permute(2, 0, 3, 1, 4)
-
-        with torch.cuda.amp.autocast(False):
+    
+        with torch.amp.autocast('cuda',enabled=False):
             q, k, v = qkv[0].float(), qkv[1].float(), qkv[2].float()  # make torchscript happy (cannot use tensor as tuple)
 
             q = q * self.scale
@@ -136,7 +136,7 @@ class WindowAttention(nn.Module):
 
             x = (attn @ v).transpose(1, 2).reshape(B_, N, C)
 
-        with torch.cuda.amp.autocast(True):
+        with torch.amp.autocast('cuda',enabled=True):
             x = self.proj(x)
             x = self.proj_drop(x)
         return x
@@ -263,7 +263,7 @@ class SwinTransformerBlock(nn.Module):
 
         # FFN
         x = shortcut + self.drop_path(x)
-        with torch.cuda.amp.autocast(True):
+        with torch.amp.autocast('cuda',enabled=True):
             x = x + self.drop_path(self.mlp(self.norm2(x)))
 
         return x
